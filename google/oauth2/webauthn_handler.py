@@ -10,7 +10,13 @@ from google.auth import exceptions
 
 @dataclass(frozen=True)
 class PublicKeyCredentialDescriptor:
+<<<<<<< HEAD
     """PublicKeyCredentialDescriptor
+=======
+    """Descriptor for a security key based credential.
+
+    https://www.w3.org/TR/webauthn-3/#dictionary-credential-descriptor
+>>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
 
     Args:
         id: <url-safe base64-encoded> credential id (key handle).
@@ -28,6 +34,7 @@ class PublicKeyCredentialDescriptor:
             cred['trasnports'] = self.transports
         return cred
 
+<<<<<<< HEAD
 
 @dataclass
 class AuthenticationExtensionsClientInputs:
@@ -35,6 +42,15 @@ class AuthenticationExtensionsClientInputs:
 
     Args:
         appid: app id that can be asserted with in addition to rpid.
+=======
+@dataclass
+class AuthenticationExtensionsClientInputs:
+    """Client extensions inputs for WebAuthn extensions.
+
+    Args:
+        appid: app id that can be asserted with in addition to rpid.
+            https://www.w3.org/TR/webauthn-3/#sctn-appid-extension
+>>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
     """
     appid: Optional[str] = None
 
@@ -44,24 +60,39 @@ class AuthenticationExtensionsClientInputs:
             extensions['appid'] = self.appid
         return extensions
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
 @dataclass
 class GetRequest:
     """WebAuthn get request
 
     Args:
         origin: Origin where the WebAuthn get assertion takes place.
+<<<<<<< HEAD
         timeout_ms: Timeout number in millisecond.
         rpid: Relying Party ID.
         challenge: <url-safe base64-encoded> raw challenge.
+=======
+        rpid: Relying Party ID.
+        challenge: <url-safe base64-encoded> raw challenge.
+        timeout_ms: Timeout number in millisecond.
+>>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
         allow_credentials: List of allowed credentials.
         user_verification: <'required'|'preferred'|'discouraged'> User verification requirement.
         extensions: WebAuthn authentication extensions inputs.
     """
     origin: str
+<<<<<<< HEAD
     timeout_ms: Optional[int] = None
     rpid: str = None
     challenge: str = None
+=======
+    rpid: str
+    challenge: str
+    timeout_ms: Optional[int] = None
+>>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
     allow_credentials: Optional[List[PublicKeyCredentialDescriptor]] = None
     user_verification: Optional[str] = None
     extensions: Optional[AuthenticationExtensionsClientInputs] = None
@@ -87,7 +118,13 @@ class GetRequest:
 
 @dataclass(frozen=True)
 class AuthenticatorAssertionResponse:
+<<<<<<< HEAD
     """WebAuthn AuthenticatorAssertionResponse
+=======
+    """Authenticator response to a WebAuthn get (assertion) request.
+
+    https://www.w3.org/TR/webauthn-3/#authenticatorassertionresponse
+>>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
     
     Args:
         client_data_json: <url-safe base64-encoded> client data JSON.
@@ -102,7 +139,11 @@ class AuthenticatorAssertionResponse:
 
 @dataclass(frozen=True)
 class GetResponse:
+<<<<<<< HEAD
     """WebAuthn get response
+=======
+    """WebAuthn get (assertion) response.
+>>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
     
     Args:
         id: <url-safe base64-encoded> credential id (key handle).
@@ -113,7 +154,11 @@ class GetResponse:
     id: str
     response: AuthenticatorAssertionResponse
     authenticator_attachment: Optional[str]
+<<<<<<< HEAD
     client_extension_results: Dict
+=======
+    client_extension_results: Optional[Dict]
+>>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
 
     @staticmethod
     def from_json(json_str: str):
@@ -146,12 +191,17 @@ class GetResponse:
 
 class WebAuthnHandler(abc.ABC):
     @abc.abstractmethod
+<<<<<<< HEAD
     def is_available() -> bool:
         raise NotImplementedError("is_available method must be implemented")
 
     @abc.abstractmethod
     def get(get_request: GetRequest) -> GetResponse:
         """WebAuthn get"""
+=======
+    def get(get_request: GetRequest) -> GetResponse:
+        """WebAuthn get (assertion)"""
+>>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
         raise NotImplementedError("get method must be implemented")
     
 class PluginHandler(WebAuthnHandler):
@@ -170,10 +220,14 @@ class PluginHandler(WebAuthnHandler):
     The struct definition of the request and response JSON can be found in
     webauthn_plugin_message.d.ts
     """
+<<<<<<< HEAD
     _ENV_VAR = 'GCLOUD_WEBAUTHN_PLUGIN'
 
     def is_available(self) -> bool:
         return os.environ.get(PluginHandler._ENV_VAR) is not None
+=======
+    _ENV_VAR = 'GOOGLE_AUTH_WEBAUTHN_PLUGIN'
+>>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
 
     def get(self, get_request: GetRequest) -> GetResponse:
         request_json = get_request.to_json()
