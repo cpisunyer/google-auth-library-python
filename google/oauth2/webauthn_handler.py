@@ -35,6 +35,7 @@ class PublicKeyCredentialDescriptor:
         return cred
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 @dataclass
 class AuthenticationExtensionsClientInputs:
@@ -43,6 +44,9 @@ class AuthenticationExtensionsClientInputs:
     Args:
         appid: app id that can be asserted with in addition to rpid.
 =======
+=======
+
+>>>>>>> 6c444f5 (feat: Integrate webauthn handler.)
 @dataclass
 class AuthenticationExtensionsClientInputs:
     """Client extensions inputs for WebAuthn extensions.
@@ -61,9 +65,13 @@ class AuthenticationExtensionsClientInputs:
         return extensions
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
+=======
+
+>>>>>>> 6c444f5 (feat: Integrate webauthn handler.)
 @dataclass
 class GetRequest:
     """WebAuthn get request
@@ -192,13 +200,19 @@ class GetResponse:
 class WebAuthnHandler(abc.ABC):
     @abc.abstractmethod
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6c444f5 (feat: Integrate webauthn handler.)
     def is_available() -> bool:
         raise NotImplementedError("is_available method must be implemented")
 
     @abc.abstractmethod
+<<<<<<< HEAD
     def get(get_request: GetRequest) -> GetResponse:
         """WebAuthn get"""
 =======
+=======
+>>>>>>> 6c444f5 (feat: Integrate webauthn handler.)
     def get(get_request: GetRequest) -> GetResponse:
         """WebAuthn get (assertion)"""
 >>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
@@ -228,6 +242,9 @@ class PluginHandler(WebAuthnHandler):
 =======
     _ENV_VAR = 'GOOGLE_AUTH_WEBAUTHN_PLUGIN'
 >>>>>>> 365450c (feat: Add WebAuthn plugin component to handle WebAuthn get request)
+
+    def is_available(self) -> bool:
+        return os.environ.get(PluginHandler._ENV_VAR) is not None
 
     def get(self, get_request: GetRequest) -> GetResponse:
         request_json = get_request.to_json()

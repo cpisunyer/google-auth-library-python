@@ -122,6 +122,7 @@ class SecurityKeyChallenge(ReauthChallenge):
     def obtain_challenge_input(self, metadata):
 
         # Check if there is an available Webauthn Handler, if not use pyu2f
+<<<<<<< HEAD
         try:
             factory = webauthn_handler_factory.WebauthnHandlerFactory()
             webauthn_handler = factory.get_handler()
@@ -130,6 +131,12 @@ class SecurityKeyChallenge(ReauthChallenge):
         except:
             # Attempt pyu2f if exception in webauthn flow
             pass
+=======
+        factory = webauthn_handler_factory.WebauthnHandlerFactory()
+        webauthn_handler = factory.get_handler()
+        if webauthn_handler is not None:
+            return self._obtain_challenge_input_webauthn(metadata, webauthn_handler)
+>>>>>>> 6c444f5 (feat: Integrate webauthn handler.)
 
         try:
             import pyu2f.convenience.authenticator  # type: ignore
@@ -202,7 +209,11 @@ class SecurityKeyChallenge(ReauthChallenge):
 
         allow_credentials = []
         for challenge in challenges:
+<<<<<<< HEAD
             key_handle = self._urlsafe_b64recode(challenge['keyHandle'])
+=======
+            key_handle = challenge['keyHandle']
+>>>>>>> 6c444f5 (feat: Integrate webauthn handler.)
             # TODO: do we need to set transports
             allow_credentials.append(
                 PublicKeyCredentialDescriptor(id = key_handle))
@@ -214,7 +225,11 @@ class SecurityKeyChallenge(ReauthChallenge):
             origin = REAUTH_ORIGIN,
             timeout_ms = WEBAUTHN_TIMEOUT_MS,
             rpid = relying_party_id,
+<<<<<<< HEAD
             challenge =  self._urlsafe_b64recode(challenges[1]['challenge']),
+=======
+            challenge =  challenges[1]['challenge'],
+>>>>>>> 6c444f5 (feat: Integrate webauthn handler.)
             allow_credentials = allow_credentials,
             user_verification =  'required',
             extensions = extension
@@ -224,11 +239,18 @@ class SecurityKeyChallenge(ReauthChallenge):
             get_response = webauthn_handler.get(get_request)
         except e:
             sys.stderr.write("Webauthn Error: {}.\n".format(e))
+<<<<<<< HEAD
             raise e
 
         response = {
             'clientData': get_response.response.client_data_json,
             'authenticatorData': get_response.response.authenticator_data,
+=======
+            return None
+
+        response = {
+            'clientData': get_response.response.client_data_json,
+>>>>>>> 6c444f5 (feat: Integrate webauthn handler.)
             'signatureData': get_response.response.signature,
             'applicationId': application_id,
             'keyHandle': get_response.id,
@@ -236,12 +258,15 @@ class SecurityKeyChallenge(ReauthChallenge):
         }
         return {"securityKey": response}
 
+<<<<<<< HEAD
     def _urlsafe_b64recode(self, s):
         """Converts standard b64 encoded string to url safe b64 encoded string 
         with no padding."""
         b = base64.urlsafe_b64decode(s)
         return base64.urlsafe_b64encode(b).decode().rstrip('=')
 
+=======
+>>>>>>> 6c444f5 (feat: Integrate webauthn handler.)
 
 class SamlChallenge(ReauthChallenge):
     """Challenge that asks the users to browse to their ID Providers.
