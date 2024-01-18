@@ -22,12 +22,22 @@ import sys
 
 from google.auth import _helpers
 from google.auth import exceptions
+from google.oauth2.webauthn_handler import (
+   PublicKeyCredentialDescriptor,
+   AuthenticationExtensionsClientInputs,
+   GetRequest,
+   GetResponse
+)
+
+
+from google.oauth2 import webauthn_handler, webauthn_handler_factory
 
 
 REAUTH_ORIGIN = "https://accounts.google.com"
 SAML_CHALLENGE_MESSAGE = (
     "Please run `gcloud auth login` to complete reauthentication with SAML."
 )
+WEBAUTHN_TIMEOUT_MS = 120000 # Two minute timeout
 
 
 def get_user_password(text):
@@ -110,6 +120,13 @@ class SecurityKeyChallenge(ReauthChallenge):
 
     @_helpers.copy_docstring(ReauthChallenge)
     def obtain_challenge_input(self, metadata):
+
+        # Check if there is an available Webauthn Handler, if not use pyu2f
+        factory = webauthn_handler_factory.WebauthnHandlerFactory()
+        webauthn_handler = factory.get_handler()
+        if webauthn_handler is not None:
+            return self._obtain_challenge_input_webauthn(metadata, webauthn_handler)
+
         try:
             import pyu2f.convenience.authenticator  # type: ignore
             import pyu2f.errors  # type: ignore
@@ -172,6 +189,47 @@ class SecurityKeyChallenge(ReauthChallenge):
             except pyu2f.errors.NoDeviceFoundError:
                 sys.stderr.write("No security key found.\n")
             return None
+
+    def _obtain_challenge_input_webauthn(self, metadata, webauthn_handler):
+        sk = metadata["securityKey"]
+        challenges = sk["challenges"]
+        application_id = sk["applicationId"]
+        relying_party_id = sk["relyingPartyId"]
+
+        allow_credentials = []
+        for challenge in challenges:
+            key_handle = challenge['keyHandle']
+            # TODO: do we need to set transports
+            allow_credentials.append(
+                PublicKeyCredentialDescriptor(id = key_handle))
+
+        extension = AuthenticationExtensionsClientInputs(
+            appid = application_id)
+
+        get_request = GetRequest(
+            origin = REAUTH_ORIGIN,
+            timeout_ms = WEBAUTHN_TIMEOUT_MS,
+            rpid = relying_party_id,
+            challenge =  challenges[1]['challenge'],
+            allow_credentials = allow_credentials,
+            user_verification =  'required',
+            extensions = extension
+        )
+
+        try:
+            get_response = webauthn_handler.get(get_request)
+        except e:
+            sys.stderr.write("Webauthn Error: {}.\n".format(e))
+            return None
+
+        response = {
+            'clientData': get_response.response.client_data_json,
+            'signatureData': get_response.response.signature,
+            'applicationId': application_id,
+            'keyHandle': get_response.id,
+            'isWebauthn': True
+        }
+        return {"securityKey": response}
 
 
 class SamlChallenge(ReauthChallenge):

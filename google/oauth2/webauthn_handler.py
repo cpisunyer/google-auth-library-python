@@ -28,6 +28,7 @@ class PublicKeyCredentialDescriptor:
             cred['trasnports'] = self.transports
         return cred
 
+
 @dataclass
 class AuthenticationExtensionsClientInputs:
     """AuthenticationExtensionsClientInputs
@@ -42,6 +43,7 @@ class AuthenticationExtensionsClientInputs:
         if self.appid:
             extensions['appid'] = self.appid
         return extensions
+
 
 @dataclass
 class GetRequest:
@@ -58,8 +60,8 @@ class GetRequest:
     """
     origin: str
     timeout_ms: Optional[int] = None
-    rpid: str
-    challenge: str
+    rpid: str = None
+    challenge: str = None
     allow_credentials: Optional[List[PublicKeyCredentialDescriptor]] = None
     user_verification: Optional[str] = None
     extensions: Optional[AuthenticationExtensionsClientInputs] = None
@@ -144,6 +146,10 @@ class GetResponse:
 
 class WebAuthnHandler(abc.ABC):
     @abc.abstractmethod
+    def is_available() -> bool:
+        raise NotImplementedError("is_available method must be implemented")
+
+    @abc.abstractmethod
     def get(get_request: GetRequest) -> GetResponse:
         """WebAuthn get"""
         raise NotImplementedError("get method must be implemented")
@@ -165,6 +171,9 @@ class PluginHandler(WebAuthnHandler):
     webauthn_plugin_message.d.ts
     """
     _ENV_VAR = 'GCLOUD_WEBAUTHN_PLUGIN'
+
+    def is_available(self) -> bool:
+        return os.environ.get(PluginHandler._ENV_VAR) is not None
 
     def get(self, get_request: GetRequest) -> GetResponse:
         request_json = get_request.to_json()
