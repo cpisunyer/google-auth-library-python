@@ -228,6 +228,7 @@ class SecurityKeyChallenge(ReauthChallenge):
 
         response = {
             'clientData': get_response.response.client_data_json,
+            'authenticatorData': get_response.response.authenticator_data,
             'signatureData': get_response.response.signature,
             'applicationId': application_id,
             'keyHandle': get_response.id,
