@@ -223,13 +223,16 @@ class SecurityKeyChallenge(ReauthChallenge):
 
         get_request = GetRequest(
             origin = REAUTH_ORIGIN,
-            timeout_ms = WEBAUTHN_TIMEOUT_MS,
             rpid = relying_party_id,
 <<<<<<< HEAD
             challenge =  self._urlsafe_b64recode(challenges[1]['challenge']),
+<<<<<<< HEAD
 =======
             challenge =  challenges[1]['challenge'],
 >>>>>>> 6c444f5 (feat: Integrate webauthn handler.)
+=======
+            timeout_ms = WEBAUTHN_TIMEOUT_MS,
+>>>>>>> 64c1295 (feat: Integrate webauthn handler.)
             allow_credentials = allow_credentials,
             user_verification =  'required',
             extensions = extension
